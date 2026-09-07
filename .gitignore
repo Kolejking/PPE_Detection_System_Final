@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+venv/
+
+# VS Code
+.vscode/
+
+# Generated outputs
+outputs/
+
+# Input data
+inputs/
+
+# YOLO training artifacts
+runs/
+wandb/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
