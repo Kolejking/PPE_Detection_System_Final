@@ -11,6 +11,8 @@ from src.ppe_association import (
     draw_ppe_association
 )
 
+from src.database import PPEDatabase
+
 
 class VideoProcessor:
 
@@ -26,6 +28,12 @@ class VideoProcessor:
             parents=True,
             exist_ok=True
         )
+
+        # ====================================================
+        # DATABASE
+        # ====================================================
+
+        self.db = PPEDatabase()
 
     def save_tracking_ppe_video(
         self,
@@ -50,6 +58,8 @@ class VideoProcessor:
             PPE association
               ↓
             PPE status
+              ↓
+            Database
               ↓
             Visualization
               ↓

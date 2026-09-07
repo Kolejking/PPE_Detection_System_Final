@@ -5,6 +5,7 @@ import cv2
 from src.detector import PPEDetector
 from src.tracker import PPETracker
 from src.video_processor import VideoProcessor
+from src.database import PPEDatabase
 
 from src.ppe_association import (
     extract_detections,
@@ -22,7 +23,8 @@ from src.ppe_association import (
 # ============================================================
 
 MODEL_PATH = "models/best1.pt"
-TRACKER_PATH = "configs/botsort.yaml"
+
+TRACKER_PATH = "configs/bootsort.yaml"
 
 
 # Choose:
@@ -30,21 +32,22 @@ TRACKER_PATH = "configs/botsort.yaml"
 # "image" -> YOLO + refined PPE association
 #
 # "video" -> YOLO + BoT-SORT + refined PPE association
-#
+
 MODE = "image"
 
 
 IMAGE_PATH = (
-    "inputs/images/plantimage14.jpg"
+    "inputs/images/plantimage17.jpg"
 )
 
 
 VIDEO_PATH = (
-    "inputs/videos/Testvideo4.mp4"
+    "inputs/videos/ppe_video.mp4"
 )
 
 
 CONFIDENCE = 0.25
+
 
 MIN_SCORE = (
     MIN_ASSOCIATION_SCORE
@@ -78,6 +81,17 @@ def main():
     print(
         "Minimum association score:",
         MIN_SCORE
+    )
+
+
+    # ========================================================
+    # DATABASE
+    # ========================================================
+
+    database = PPEDatabase()
+
+    print(
+        "✅ SQLite database connected"
     )
 
 
@@ -258,6 +272,11 @@ def main():
             )
 
             print(
+                "Track ID:",
+                person.get("track_id")
+            )
+
+            print(
                 "Helmet:",
                 person["helmet_status"],
                 f'| score='
@@ -285,9 +304,39 @@ def main():
                 f'{person["safety_goggles_score"]:.3f}'
             )
 
+            print(
+                "Overall Status:",
+                person.get("overall_status")
+            )
+
         print(
             "\n======================================="
         )
+
+
+        # ====================================================
+        # SAVE PPE RESULTS TO DATABASE
+        # ====================================================
+
+        if ppe_status:
+
+            database.insert_detections(
+                statuses=ppe_status,
+                source=IMAGE_PATH
+            )
+
+            print(
+                f"\n✅ Saved "
+                f"{len(ppe_status)} PPE record(s) "
+                f"to SQLite database"
+            )
+
+        else:
+
+            print(
+                "\n⚠️ No persons detected. "
+                "Nothing saved to database."
+            )
 
 
         # ----------------------------------------------------
@@ -369,6 +418,16 @@ def main():
         print(
             "Output:",
             output_path
+        )
+
+
+        # ----------------------------------------------------
+        # Database record count
+        # ----------------------------------------------------
+
+        print(
+            "Database records:",
+            database.count_records()
         )
 
 
